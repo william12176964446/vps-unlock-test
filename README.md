@@ -29,12 +29,6 @@ Carl 专用的一键脚本，用于评估 VPS 的 IP 解锁能力和网络质量
 - 🚄 速度测试：
   - Speedtest CLI（下行 / 上行 / Ping）
 
-- 📨 Telegram 推送（可选）：
-  - 自动将报告发送到 Telegram 机器人
-
-- 📄 自动生成 Markdown 报告：
-  - 输出为 `report.md`，便于归档或分享
-
 ---
 
 ## 🧑‍💻 使用方法
