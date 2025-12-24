@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =========================================================
-# VPS 解锁 & 质量评估脚本 v3.2 终端版
+# VPS 解锁 & 质量评估脚本 v3.3 终端版
 # IPv4 / IPv6 分离 + 风险检测 + Adobe/Photoshop检测
 # =========================================================
 
@@ -45,8 +45,12 @@ check_stack() {
   [[ "$DIS" != "0" ]] && log "  Disney+: 可用" || log "  Disney+: 不可用"
 
   # ---------- YouTube ----------
-  YT=$($CURL https://www.youtube.com/premium 2>/dev/null | grep -oP '"countryCode":"\K[A-Z]+' | head -1)
-  [[ -n "$YT" ]] && log "  YouTube Premium: $YT" || log "  YouTube Premium: 未知"
+  YT_PAGE=$($CURL https://www.youtube.com/premium 2>/dev/null)
+  if echo "$YT_PAGE" | grep -q "Premium"; then
+      log "  YouTube Premium: 可用"
+  else
+      log "  YouTube Premium: 未知"
+  fi
 
   # ---------- TikTok（改进检测） ----------
   TT_CONTENT=$($CURL -L https://www.tiktok.com 2>/dev/null)
@@ -84,7 +88,7 @@ check_stack() {
 # =========================================================
 # 主流程
 # =========================================================
-green "VPS 解锁评估报告 v3.2"
+green "VPS 解锁评估报告 v3.3"
 log "主机: $HOST"
 log "时间: $DATE"
 log ""
