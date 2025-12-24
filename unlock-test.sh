@@ -90,7 +90,7 @@ check_stack() {
     GRADE="B"
   fi
 
-  log ""
+  log " "
   log " "
   log ""
 
