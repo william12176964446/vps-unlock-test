@@ -114,5 +114,5 @@ IPV6_SCORE=$(echo "$IPV6_RES" | cut -d'|' -f1)
 #IPV6_GRADE=$(echo "$IPV6_RES" | cut -d'|' -f2)
 
 green "汇总："
-log "IPv4 得分: $IPV4_SCORE, 等级: $IPV4_GRADE"
-log "IPv6 得分: $IPV6_SCORE, 等级: $IPV6_GRADE"
+# log "IPv4 得分: $IPV4_SCORE, 等级: $IPV4_GRADE"
+# log "IPv6 得分: $IPV6_SCORE, 等级: $IPV6_GRADE"
