@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =========================================================
-# VPS 解锁 & 质量评估脚本 v3.2 终端版
+# VPS 解锁 & 质量评估脚本 v3.3 终端版（优化版）
 # IPv4 / IPv6 分离 + 风险检测 + Adobe/Photoshop检测
 # 直接在终端显示，不生成文件，不显示得分和等级
 # =========================================================
@@ -21,7 +21,7 @@ log(){ echo "$1"; }
 check_stack() {
   STACK="$1"   # 4 or 6
 
-  CURL="curl -$STACK -s -m 10"
+  CURL="curl -$STACK -s -L -m 10 -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'"
 
   IPINFO=$($CURL https://ipinfo.io/json 2>/dev/null)
   IP=$(echo "$IPINFO" | grep '"ip"' | sed 's/.*"ip": "\(.*\)".*/\1/')
@@ -32,39 +32,59 @@ check_stack() {
   log "  ASN: ${ORG:-N/A}"
 
   # ---------- Netflix ----------
-  NF=$($CURL -o /dev/null -w "%{http_code}" https://www.netflix.com/title/80018499 2>/dev/null)
-  if [[ "$NF" == "200" || "$NF" == "301" ]]; then
-    log "  Netflix: 完整"
-  elif [[ "$NF" == "404" ]]; then
-    log "  Netflix: 仅自制"
+  NF_PAGE=$($CURL https://www.netflix.com/title/80018499 2>/dev/null)
+  if echo "$NF_PAGE" | grep -q "Watch"; then
+      log "  Netflix: 完整"
+  elif echo "$NF_PAGE" | grep -q "titleNotAvailable"; then
+      log "  Netflix: 仅自制"
   else
-    log "  Netflix: 不可用"
+      log "  Netflix: 不可用"
   fi
 
   # ---------- Disney+ ----------
-  DIS=$($CURL -I https://www.disneyplus.com 2>/dev/null | grep -qi unavailable; echo $?)
-  [[ "$DIS" != "0" ]] && log "  Disney+: 可用" || log "  Disney+: 不可用"
+  DIS_PAGE=$($CURL https://www.disneyplus.com 2>/dev/null)
+  if echo "$DIS_PAGE" | grep -qi "Disney+"; then
+      log "  Disney+: 可用"
+  else
+      log "  Disney+: 不可用"
+  fi
 
   # ---------- YouTube ----------
-  YT=$($CURL https://www.youtube.com/premium 2>/dev/null | grep -oP '"countryCode":"\K[A-Z]+' | head -1)
-  [[ -n "$YT" ]] && log "  YouTube Premium: $YT" || log "  YouTube Premium: 未知"
+  YT_PAGE=$($CURL https://www.youtube.com/premium 2>/dev/null)
+  if echo "$YT_PAGE" | grep -q "Premium"; then
+      log "  YouTube Premium: 可用"
+  else
+      log "  YouTube Premium: 未知"
+  fi
 
   # ---------- TikTok ----------
-  TT=$($CURL -o /dev/null -w "%{http_code}" https://www.tiktok.com 2>/dev/null)
-  [[ "$TT" == "200" ]] && log "  TikTok: 可用" || log "  TikTok: 不可用"
+  TT_PAGE=$($CURL https://www.tiktok.com 2>/dev/null)
+  if echo "$TT_PAGE" | grep -q "TikTok"; then
+      log "  TikTok: 可用"
+  else
+      log "  TikTok: 不可用"
+  fi
 
   # ---------- ChatGPT ----------
-  GPT=$($CURL -o /dev/null -w "%{http_code}" https://chat.openai.com 2>/dev/null)
-  [[ "$GPT" == "200" || "$GPT" == "302" ]] && log "  ChatGPT: 可用" || log "  ChatGPT: 异常"
+  GPT_PAGE=$($CURL https://chat.openai.com 2>/dev/null)
+  if echo "$GPT_PAGE" | grep -q "OpenAI"; then
+      log "  ChatGPT: 可用"
+  else
+      log "  ChatGPT: 异常"
+  fi
 
   # ---------- Firefly ----------
-  FF=$($CURL -o /dev/null -w "%{http_code}" https://firefly.adobe.com 2>/dev/null)
-  [[ "$FF" == "200" || "$FF" == "302" ]] && log "  Firefly: 可用" || log "  Firefly: 封锁"
+  FF_PAGE=$($CURL https://firefly.adobe.com 2>/dev/null)
+  if echo "$FF_PAGE" | grep -q "Adobe Firefly"; then
+      log "  Firefly: 可用"
+  else
+      log "  Firefly: 封锁"
+  fi
 
   # ---------- Adobe / Photoshop ----------
-  ADOBE_HEADER=$($CURL -I https://cc-api-data.adobe.io 2>/dev/null | grep HTTP)
-  ADOBE_REGION=$($CURL -s https://cc-api-data.adobe.io 2>/dev/null | grep -oP '"country":"\K[A-Z]+' | head -1)
-  if echo "$ADOBE_HEADER" | grep -q "200"; then
+  ADOBE_PAGE=$($CURL https://cc-api-data.adobe.io 2>/dev/null)
+  ADOBE_REGION=$(echo "$ADOBE_PAGE" | grep -oP '"country":"\K[A-Z]+' | head -1)
+  if [[ -n "$ADOBE_PAGE" ]]; then
       log "  Adobe / Photoshop: 服务可用（区域: ${ADOBE_REGION:-未知}）"
   else
       log "  Adobe / Photoshop: 不可用或封锁"
@@ -81,7 +101,7 @@ check_stack() {
 # =========================================================
 # 主流程
 # =========================================================
-green "VPS 解锁评估报告 v3.2"
+green "VPS 解锁评估报告 v3.3"
 log "主机: $HOST"
 log "时间: $DATE"
 log ""
