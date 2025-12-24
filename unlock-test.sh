@@ -90,8 +90,8 @@ check_stack() {
     GRADE="B"
   fi
 
-  log "  得分: $SCORE"
-  log "  等级: $GRADE"
+  log ""
+  log " "
   log ""
 
   echo "$SCORE|$GRADE"
@@ -110,9 +110,10 @@ IPV6_RES=$(check_stack 6)
 
 IPV4_SCORE=$(echo "$IPV4_RES" | cut -d'|' -f1)
 # IPV4_GRADE=$(echo "$IPV4_RES" | cut -d'|' -f2)
+
 IPV6_SCORE=$(echo "$IPV6_RES" | cut -d'|' -f1)
-#IPV6_GRADE=$(echo "$IPV6_RES" | cut -d'|' -f2)
+# IPV6_GRADE=$(echo "$IPV6_RES" | cut -d'|' -f2)
 
 green "汇总："
-log ""
-log ""
+log "IPv4 得分: $IPV4_SCORE, 等级: $IPV4_GRADE"
+log "IPv6 得分: $IPV6_SCORE, 等级: $IPV6_GRADE"
