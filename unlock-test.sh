@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =========================================================
-# VPS 解锁 & 质量评估脚本 v3.3 终端版
+# VPS 解锁 & 质量评估脚本 v3.2 终端版
 # IPv4 / IPv6 分离 + 风险检测 + Adobe/Photoshop检测
 # =========================================================
 
@@ -61,8 +61,17 @@ check_stack() {
   fi
 
   # ---------- ChatGPT ----------
-  GPT=$($CURL -o /dev/null -w "%{http_code}" https://chat.openai.com 2>/dev/null)
-  [[ "$GPT" == "200" || "$GPT" == "302" ]] && log "  ChatGPT: 可用" || log "  ChatGPT: 异常"
+# 设置 curl，跟随重定向 + 浏览器 UA
+CURL="curl -$STACK -s -L -m 10 -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'"
+
+GPT_PAGE=$($CURL https://chat.openai.com 2>/dev/null)
+
+if [[ -n "$GPT_PAGE" ]] && echo "$GPT_PAGE" | grep -q "OpenAI"; then
+    log "  ChatGPT: 可用"
+else
+    log "  ChatGPT: 异常"
+fi
+
 
   # ---------- Firefly ----------
   FF=$($CURL -o /dev/null -w "%{http_code}" https://firefly.adobe.com 2>/dev/null)
@@ -88,7 +97,7 @@ check_stack() {
 # =========================================================
 # 主流程
 # =========================================================
-green "VPS 解锁评估报告 v3.3"
+green "VPS 解锁评估报告 v3.2"
 log "主机: $HOST"
 log "时间: $DATE"
 log ""
