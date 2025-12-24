@@ -17,6 +17,7 @@ log(){ echo "$1"; }
 
 # =========================================================
 # 通用检测函数（IPv4 / IPv6 复用）
+# 返回格式: "得分 等级" 直接可 read 拆分
 # =========================================================
 check_stack() {
   STACK="$1"   # 4 or 6
@@ -94,7 +95,8 @@ check_stack() {
   log "  等级: $GRADE"
   log ""
 
-  echo "$SCORE|$GRADE"
+  # 返回格式改为 "得分 等级"，方便 read 一次拆分
+  echo "$SCORE $GRADE"
 }
 
 # =========================================================
@@ -105,14 +107,9 @@ log "主机: $HOST"
 log "时间: $DATE"
 log ""
 
-IPV4_RES=$(check_stack 4)
-IPV6_RES=$(check_stack 6)
-
-IPV4_SCORE=$(echo "$IPV4_RES" | cut -d'|' -f1)
-IPV4_GRADE=$(echo "$IPV4_RES" | cut -d'|' -f2)
-
-IPV6_SCORE=$(echo "$IPV6_RES" | cut -d'|' -f1)
-IPV6_GRADE=$(echo "$IPV6_RES" | cut -d'|' -f2)
+# IPv4 / IPv6 检测
+read IPV4_SCORE IPV4_GRADE <<< "$(check_stack 4)"
+read IPV6_SCORE IPV6_GRADE <<< "$(check_stack 6)"
 
 green "汇总："
 log "IPv4 得分: $IPV4_SCORE, 等级: $IPV4_GRADE"
