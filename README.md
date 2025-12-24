@@ -1,5 +1,6 @@
 # 🌐 VPS 解锁 & 网络质量评估脚本
-<img width="642" height="742" alt="image" src="https://github.com/user-attachments/assets/f4872c04-c298-4605-9311-a86c6bcae7de" />
+
+<img width="642" height="742" alt="image" src="https://github.com/user-attachments/assets/18afe8df-a7dd-4368-8d3b-6830e51db033" />
 
 一键脚本，用于评估 VPS 的 IP 解锁能力和网络质量。支持流媒体、AI、软件服务、IP 信息分析、测速、Telegram 推送等功能。
 
